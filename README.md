@@ -1,23 +1,33 @@
-![The stair](image.png)
-
 # Industrial Stair Calculator
 
-Streamlit-based calculation and verification tool for industrial stairs and stepladders per **ISO 14122-3:2016**.
+A Streamlit-based tool for calculating and verifying industrial stairs and stepladders per **ISO 14122-3:2016** (Safety of machinery — Permanent means of access to machinery — Part 3: Stairs, stepladders and guard-rails).
+
+## Languages
+
+| File | Language |
+|------|----------|
+| `stair.py` | English |
+| `stair_ru.py` | Russian |
 
 ## Features
 
-- **3 input modes:** Steps (N), horizontal run (L), or desired angle
-- **Step offsets:** Pd (bottom) and Pup (top) — distances from floor to first/last step
-- **Automatic stair/stepladder detection** based on inclination angle
-- **ISO 14122-3 compliance checks:** angle range, Blondel formula, tread depth, riser height, stair width
-- **Side-view SVG** with all dimensions (H, L, angle, Pd, Pup) and orange offset markers
-- **Real-time feedback** — compliant steps in blue, violations in red
+- Geometry calculation from step count (N) and tread depth (t)
+- Bottom platform offset (B) and top offset (Pup) support
+- Automatic type detection: **Stairs** (20°–45°) or **Stepladders** (45°–75°)
+- ISO 14122-3 compliance checks:
+  - Inclination angle
+  - Blondel formula (600 ≤ g + 2h ≤ 660)
+  - Minimum tread depth (g)
+  - Maximum riser height (h)
+- Side-view SVG visualization with dimensions (H, L, angle, B, Pup)
+- Real-time feedback — compliant steps in blue, violations in red
 
 ## Quick Start (Windows)
 
 ```bash
-install.bat   # creates venv and installs deps
-start.bat     # launches streamlit app
+install.bat   # create venv and install dependencies
+start.bat     # launch EN version
+start_ru.bat  # launch RU version
 ```
 
 ## Manual Install
@@ -29,44 +39,42 @@ python -m venv venv
 venv\Scripts\activate     # Windows
 source venv/bin/activate  # Linux/macOS
 pip install -r requirements.txt
-streamlit run stair.py
+streamlit run stair.py    # or stair_ru.py
 ```
 
-## How it works
+## Input Parameters
 
-| Type | Angle | Tread (g) min | Riser (h) max | Width (W) min | Blondel (g+2h) |
-|---|---|---|---|---|---|
-| Stairs | 20° – 45° | 200 mm | 240 mm | 600 mm | 600–660 mm |
-| Stepladders | 45° – 75° | 150 mm | 250 mm | 500 mm | — |
+| Parameter | Description | Range |
+|-----------|-------------|-------|
+| **H** | Total rise height, mm | 300–4000 |
+| **Pup** | Vertical top offset, mm | 0–1000 |
+| **B** | Bottom platform, mm | 0–1000 |
+| **N** | Number of steps | 1–30 |
+| **t** | Tread depth, mm | 200–320 |
 
-The stair type is detected automatically from the computed angle.
-Tread is derived from the Blondel formula `g = 630 − 2h`, then the angle is computed as `atan(h/g)`.
+## Calculation
 
-### Step offsets (Pd, Pup)
+- Net rise height: `H_net = H − B − Pup`
+- Riser height: `h = H_net / N`
+- Horizontal run: `L = (N−1)·g + (B+Pup)/tan(α)`
+- Inclination angle: `α = atan(h / g)`
 
-- **Pd** — vertical distance from lower floor to the first step
-- **Pup** — vertical distance from the last step to the upper floor
-- Effective rise height for the steps: `H_net = H − Pd − Pup`
-- Each step height: `h = H_net / N`
-- Horizontal offset: `x_off = (Pd + Pup) / tan(a)`
-- Total run: `L = (N−1)·g + x_off`
-- The solver iterates (15 iterations) to converge on the correct angle with offsets
+## ISO 14122-3:2016 Requirements
 
-## Input modes
-
-| Mode | You set | Calculated |
-|---|---|---|
-| Steps (N) | H, N, Pd, Pup | h, g, L, angle |
-| L (horizontal) | H, L, Pd, Pup | N, h, g, angle |
-| Desired angle (°) | H, angle, Pd, Pup | N, h, g, L |
-
-Each mode has a slider + manual number input (synchronised).
+| Type | Angle | Tread (g) min | Riser (h) max | Blondel (g+2h) |
+|------|-------|---------------|---------------|----------------|
+| Stairs | 20°–45° | 200 mm | 240 mm | 600–660 mm |
+| Stepladders | 45°–75° | 150 mm | 250 mm | — |
 
 ## Stack
 
 - **Python 3** + **Streamlit**
-- Pure SVG rendering (no extra libs)
-- Single-file app: `stair.py`
+- Pure SVG rendering (no extra libraries)
+- Single-file app (`stair.py` / `stair_ru.py`)
+
+## Version
+
+**1.8** — Latest release. See version tag in the app footer.
 
 ## Reference
 
