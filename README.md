@@ -1,3 +1,5 @@
+![image](./image.png)
+
 # Industrial Stair Calculator
 
 A Streamlit-based tool for calculating and verifying industrial stairs and stepladders per **ISO 14122-3:2016** (Safety of machinery — Permanent means of access to machinery — Part 3: Stairs, stepladders and guard-rails).
