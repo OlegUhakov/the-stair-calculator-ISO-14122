@@ -19,136 +19,30 @@ with col_sidebar:
     Pd = st.number_input("Pd (вертикальное смещение снизу), мм", min_value=0, max_value=1000, value=0, step=10)
     Pup = st.number_input("Pup (вертикальное смещение сверху), мм", min_value=0, max_value=1000, value=0, step=10)
 
-    edit_param = st.radio(
-        "Редактируемый параметр",
-        ["Ступени (N)", "L (горизонтальный пролёт)", "Желаемый угол (°)"],
-        horizontal=True,
-    )
+    st.markdown("---")
 
-    def solve_offsets(N_val, angle_deg):
-        a_rad = math.radians(angle_deg)
-        for _ in range(15):
-            H_net = H - (Pd + Pup)
-            h_val = H_net / N_val
-            g_val = 630 - 2 * h_val
-            if g_val < 50:
-                g_val = 50
-            a_rad = math.atan(h_val / g_val)
-        return H - (Pd + Pup), h_val, g_val, math.degrees(a_rad)
+    N = st.slider("Ступени (N)", min_value=1, max_value=30, value=8)
+    t = st.slider("Ширина ступени (t), мм", min_value=200, max_value=320, step=5, value=280)
 
     def offs_L(a_deg):
         a_r = math.radians(a_deg)
         return (Pd + Pup) / math.tan(a_r) if math.tan(a_r) > 0 else 0
 
-    if edit_param == "Ступени (N)":
-        N = st.number_input(
-            "Ступени (N)", min_value=1, max_value=30, step=1, value=8, key="inp_n",
-        )
-        angle_init = math.degrees(math.atan((H / N) / max(630 - 2 * H / N, 50)))
-        H_net, h_actual, g_actual, angle = solve_offsets(N, angle_init)
-        L = g_actual * (N - 1) + offs_L(angle)
-    elif edit_param == "L (горизонтальный пролёт)":
-        if "inp_l_val" not in st.session_state:
-            st.session_state["inp_l_val"] = 1000
-        col_l1, col_l2 = st.columns([3, 1])
-        with col_l1:
-            st.slider(
-                "L (горизонтальный пролёт), мм", min_value=100, max_value=5000, step=1,
-                value=st.session_state["inp_l_val"], key="inp_l_slider",
-            )
-        with col_l2:
-            st.number_input(
-                "L (горизонтальный пролёт), мм", min_value=100, max_value=5000, step=1,
-                value=st.session_state["inp_l_val"], key="inp_l_num",
-                label_visibility="collapsed",
-            )
-        if st.session_state["inp_l_slider"] != st.session_state["inp_l_val"]:
-            st.session_state["inp_l_val"] = st.session_state["inp_l_slider"]
-        elif st.session_state["inp_l_num"] != st.session_state["inp_l_val"]:
-            st.session_state["inp_l_val"] = st.session_state["inp_l_num"]
-        L_desired = st.session_state["inp_l_val"]
-        best_n = 1
-        best_diff = float("inf")
-        best_result = None
-        for n_test in range(1, 31):
-            angle_init = math.degrees(math.atan((H / n_test) / max(630 - 2 * H / n_test, 50)))
-            H_net_t, h_t, g_t, a_t = solve_offsets(n_test, angle_init)
-            L_t = g_t * (n_test - 1) + offs_L(a_t)
-            diff = abs(L_t - L_desired)
-            if diff < best_diff:
-                best_diff = diff
-                best_result = (n_test, H_net_t, h_t, g_t, a_t, L_t)
-        N, H_net, h_actual, g_actual, angle, L = best_result
-    else:
-        if "inp_a_val" not in st.session_state:
-            st.session_state["inp_a_val"] = 33.0
-        col_a1, col_a2 = st.columns([3, 1])
-        with col_a1:
-            st.slider(
-                "Желаемый угол (°)", min_value=20.0, max_value=75.0, step=0.1,
-                value=st.session_state["inp_a_val"], key="inp_a_slider",
-            )
-        with col_a2:
-            st.number_input(
-                "Желаемый угол (°)", min_value=20.0, max_value=75.0, step=0.1,
-                value=st.session_state["inp_a_val"], key="inp_a_num",
-                format="%.1f", label_visibility="collapsed",
-            )
-        if st.session_state["inp_a_slider"] != st.session_state["inp_a_val"]:
-            st.session_state["inp_a_val"] = st.session_state["inp_a_slider"]
-        elif st.session_state["inp_a_num"] != st.session_state["inp_a_val"]:
-            st.session_state["inp_a_val"] = st.session_state["inp_a_num"]
-        angle_desired = st.session_state["inp_a_val"]
-        a_rad = math.radians(angle_desired)
-        H_net = H - (Pd + Pup)
-        tan_a = math.tan(a_rad)
-        g_approx = 630 / (1 + 2 * tan_a) if tan_a > 0 else 630
-        N = max(1, min(round(H_net / ((630 - g_approx) / 2)), 30))
-        h_actual = H_net / N
-        g_actual = 630 - 2 * h_actual
-        if g_actual < 50:
-            g_actual = 50
-        angle = math.degrees(math.atan(h_actual / g_actual))
-        L = g_actual * (N - 1) + offs_L(angle_desired)
+    H_net = H - (Pd + Pup)
+    g_actual = t
+    h_actual = H_net / N
+    angle = math.degrees(math.atan(h_actual / g_actual))
+    L = g_actual * (N - 1) + offs_L(angle)
 
     st.markdown("---")
-    if edit_param != "Ступени (N)":
-        st.number_input("Ступени (N)", value=N, disabled=True, key="__dn")
-    if edit_param != "L (горизонтальный пролёт)":
-        st.number_input("L (горизонтальный пролёт), мм", value=round(L, 0), disabled=True, format="%.0f", key="__dl")
-    if edit_param != "Желаемый угол (°)":
-        st.number_input("Желаемый угол (°)", value=round(angle, 1), disabled=True, format="%.1f", key="__da")
     st.number_input("Подступёнок (h), мм", value=round(h_actual, 1), disabled=True, format="%.1f", key="__dh")
     st.number_input("Проступь (g), мм", value=round(g_actual, 1), disabled=True, format="%.1f", key="__dg")
+    st.number_input("L (горизонтальный пролёт), мм", value=round(L, 0), disabled=True, format="%.0f", key="__dl")
 
-    if edit_param == "L (горизонтальный пролёт)":
-        l_dev = L_desired - L
-        st.caption(f"Желаемое L: {L_desired:.0f} мм | Фактическое L: {L:.0f} мм | Δ = {l_dev:+.0f} мм")
-        if N > 1:
-            h_prev = H / (N - 1)
-            g_prev = max(630 - 2 * h_prev, 50)
-            l_prev = g_prev * (N - 2)
-            st.caption(f"Попробовать N={N-1} → L≈{l_prev:.0f} мм")
-        if N < 30:
-            h_next = H / (N + 1)
-            g_next = max(630 - 2 * h_next, 50)
-            l_next = g_next * N
-            st.caption(f"Попробовать N={N+1} → L≈{l_next:.0f} мм")
-    elif edit_param == "Желаемый угол (°)":
-        a_dev = angle_desired - angle
-        st.caption(f"Желаемый угол: {angle_desired:.1f}° | Фактический угол: {angle:.1f}° | Δ = {a_dev:+.1f}°")
-        if N > 1:
-            h_prev = H / (N - 1)
-            g_prev = max(630 - 2 * h_prev, 50)
-            a_prev = math.degrees(math.atan(h_prev / g_prev))
-            st.caption(f"Попробовать N={N-1} → угол≈{a_prev:.1f}°")
-        if N < 30:
-            h_next = H / (N + 1)
-            g_next = max(630 - 2 * h_next, 50)
-            a_next = math.degrees(math.atan(h_next / g_next))
-            st.caption(f"Попробовать N={N+1} → угол≈{a_next:.1f}°")
-
-    W = st.slider("Ширина лестницы, мм", 400, 1200, 600)
+    st.markdown("---")
+    st.subheader("Расстояние между ступенями")
+    step_diagonal = math.sqrt(g_actual ** 2 + h_actual ** 2)
+    st.number_input("По наклону, мм", value=round(step_diagonal, 1), disabled=True, format="%.1f", key="__ddiag")
 
     st.markdown("---")
     st.subheader("Смещения ступеней")
@@ -163,14 +57,12 @@ with col_sidebar:
         angle_min_ok, angle_max_ok = 20, 45
         g_min_ok = 200
         h_max_ok = 240
-        w_min_ok = 600
         blondel_applies = True
     else:
         stair_type = "Стремянки (45°–75°)"
         angle_min_ok, angle_max_ok = 45, 75
         g_min_ok = 150
         h_max_ok = 250
-        w_min_ok = 500
         blondel_applies = False
 
     blondel = g_actual + 2 * h_actual
@@ -179,10 +71,9 @@ with col_sidebar:
     is_valid_angle = angle_min_ok <= angle <= angle_max_ok
     is_valid_h = h_actual <= h_max_ok
     is_valid_g = g_actual >= g_min_ok
-    is_valid_w = W >= w_min_ok
 
     is_all_valid = all(
-        [is_valid_blondel, is_valid_angle, is_valid_h, is_valid_g, is_valid_w]
+        [is_valid_blondel, is_valid_angle, is_valid_h, is_valid_g]
     )
 
 with col_main:
@@ -193,16 +84,10 @@ with col_main:
         st.metric("Ступени (N)", f"{N}")
         st.metric("Подступёнок (h)", f"{h_actual:.1f} мм")
         st.metric("Проступь (g)", f"{g_actual:.1f} мм")
-        if edit_param == "L (горизонтальный пролёт)":
-            st.metric("Желаемое L", f"{L_desired:.0f} мм")
-            st.metric("Фактическое L", f"{L:.0f} мм", delta=f"{L_desired - L:+.0f}")
-        else:
-            st.metric("L (горизонтальный пролёт)", f"{L:.0f} мм")
-        if edit_param == "Желаемый угол (°)":
-            st.metric("Желаемый угол", f"{angle_desired:.1f}°")
-            st.metric("Фактический угол", f"{angle:.1f}°", delta=f"{angle_desired - angle:+.1f}")
-        else:
-            st.metric("Угол (α)", f"{angle:.1f}°")
+        st.metric("L (горизонтальный пролёт)", f"{L:.0f} мм")
+        st.metric("Угол (α)", f"{angle:.1f}°")
+        st.metric("Расстояние по наклону", f"{step_diagonal:.1f} мм")
+        st.metric("Ширина ступени (t)", f"{t} мм")
 
     with col_draw:
         svg_w = 800
@@ -359,8 +244,6 @@ with col_main:
             st.warning(
                 f"Высота подступёнка {h_actual:.1f} мм превышает максимально допустимую ({h_max_ok} мм)."
             )
-        if not is_valid_w:
-            st.warning(f"Ширина лестницы {W} мм ниже минимальной ({w_min_ok} мм).")
 
 st.markdown("---")
-st.caption("Версия: 1.6")
+st.caption("Версия: 1.7")
