@@ -2,27 +2,27 @@ import math
 
 import streamlit as st
 
-st.set_page_config(page_title="ISO 14122-3 Stair Calculator", layout="wide")
+st.set_page_config(page_title="Калькулятор лестниц ISO 14122-3", layout="wide")
 
-st.title("Industrial Stair Calculator")
-st.caption("Calculation and verification per ISO 14122-3 (Safety of machinery)")
+st.title("Калькулятор промышленных лестниц")
+st.caption("Расчёт и проверка по ISO 14122-3 (Безопасность машин)")
 
 col_sidebar, col_main = st.columns([1, 2])
 
 with col_sidebar:
-    st.header("Input Parameters")
+    st.header("Входные параметры")
 
     H = st.number_input(
-        "Total rise height (H), mm", min_value=300, max_value=4000, value=1500, step=5,
+        "Общая высота подъёма (H), мм", min_value=300, max_value=4000, value=1500, step=5,
     )
 
-    Pup = st.number_input("Pup (vertical top offset), mm", min_value=0, max_value=1000, value=0, step=5)
-    B = st.number_input("Bottom platform (B), mm", min_value=0, max_value=1000, value=0, step=5)
+    Pup = st.number_input("Pup (вертикальное смещение сверху), мм", min_value=0, max_value=1000, value=0, step=5)
+    B = st.number_input("Платформа снизу (B), мм", min_value=0, max_value=1000, value=0, step=5)
 
     st.markdown("---")
 
-    N = st.slider("Steps (N)", min_value=1, max_value=30, value=8)
-    t = st.slider("Tread depth (t), mm", min_value=200, max_value=320, step=5, value=280)
+    N = st.slider("Ступени (N)", min_value=1, max_value=30, value=8)
+    t = st.slider("Ширина ступени (t), мм", min_value=200, max_value=320, step=5, value=280)
 
     def offs_L(a_deg):
         a_r = math.radians(a_deg)
@@ -35,31 +35,31 @@ with col_sidebar:
     L = g_actual * (N - 1) + offs_L(angle)
 
     st.markdown("---")
-    st.number_input("Riser (h), mm", value=round(h_actual, 1), disabled=True, format="%.1f", key="__dh")
-    st.number_input("Tread (g), mm", value=round(g_actual, 1), disabled=True, format="%.1f", key="__dg")
-    st.number_input("L (horizontal run), mm", value=round(L, 0), disabled=True, format="%.0f", key="__dl")
+    st.number_input("Подступёнок (h), мм", value=round(h_actual, 1), disabled=True, format="%.1f", key="__dh")
+    st.number_input("Проступь (g), мм", value=round(g_actual, 1), disabled=True, format="%.1f", key="__dg")
+    st.number_input("L (горизонтальный пролёт), мм", value=round(L, 0), disabled=True, format="%.0f", key="__dl")
 
     st.markdown("---")
-    st.subheader("Step spacing")
+    st.subheader("Расстояние между ступенями")
     step_diagonal = math.sqrt(g_actual ** 2 + h_actual ** 2)
-    st.number_input("Along slope, mm", value=round(step_diagonal, 1), disabled=True, format="%.1f", key="__ddiag")
+    st.number_input("По наклону, мм", value=round(step_diagonal, 1), disabled=True, format="%.1f", key="__ddiag")
 
     st.markdown("---")
-    st.subheader("Step offsets")
+    st.subheader("Смещения ступеней")
     angle_rad = math.radians(angle)
     Ad = B / math.sin(angle_rad) if math.sin(angle_rad) > 0 else 0
     Aup = Pup / math.sin(angle_rad) if math.sin(angle_rad) > 0 else 0
-    st.number_input("Ad (along stair, bottom), mm", value=round(Ad, 1), disabled=True, format="%.1f")
-    st.number_input("Aup (along stair, top), mm", value=round(Aup, 1), disabled=True, format="%.1f")
+    st.number_input("Ad (вдоль лестницы, снизу), мм", value=round(Ad, 1), disabled=True, format="%.1f")
+    st.number_input("Aup (вдоль лестницы, сверху), мм", value=round(Aup, 1), disabled=True, format="%.1f")
 
     if angle < 45:
-        stair_type = "Stairs (20\u00b0\u201345\u00b0)"
+        stair_type = "Лестницы (20°–45°)"
         angle_min_ok, angle_max_ok = 20, 45
         g_min_ok = 200
         h_max_ok = 240
         blondel_applies = True
     else:
-        stair_type = "Stepladders (45\u00b0\u201375\u00b0)"
+        stair_type = "Стремянки (45°–75°)"
         angle_min_ok, angle_max_ok = 45, 75
         g_min_ok = 150
         h_max_ok = 250
@@ -80,16 +80,16 @@ with col_main:
     col_draw, col_metrics = st.columns([3, 1])
 
     with col_metrics:
-        st.subheader("Parameters")
+        st.subheader("Параметры")
         if B > 0:
-            st.metric("Platform (B)", f"{B} mm")
-        st.metric("Steps (N)", f"{N}")
-        st.metric("Riser (h)", f"{h_actual:.1f} mm")
-        st.metric("Tread (g)", f"{g_actual:.1f} mm")
-        st.metric("L (horizontal run)", f"{L:.0f} mm")
-        st.metric("Angle (\u03b1)", f"{angle:.1f}\u00b0")
-        st.metric("Along slope", f"{step_diagonal:.1f} mm")
-        st.metric("Tread depth (t)", f"{t} mm")
+            st.metric("Платформа (B)", f"{B} мм")
+        st.metric("Ступени (N)", f"{N}")
+        st.metric("Подступёнок (h)", f"{h_actual:.1f} мм")
+        st.metric("Проступь (g)", f"{g_actual:.1f} мм")
+        st.metric("L (горизонтальный пролёт)", f"{L:.0f} мм")
+        st.metric("Угол (α)", f"{angle:.1f}°")
+        st.metric("Расстояние по наклону", f"{step_diagonal:.1f} мм")
+        st.metric("Ширина ступени (t)", f"{t} мм")
 
     with col_draw:
         svg_w = 800
@@ -130,7 +130,7 @@ with col_main:
             )
             svg_lines.append(
                 f'<text x="{bx + bw + 5}" y="{by + bh / 2 + 4}" fill="#64748b" '
-                f'font-family="sans-serif" font-size="11">B = {B} mm</text>'
+                f'font-family="sans-serif" font-size="11">B = {B} мм</text>'
             )
 
         step_color = "#3b82f6" if is_all_valid else "#ef4444"
@@ -170,7 +170,7 @@ with col_main:
         )
         svg_lines.append(
             f'<text x="{x_h_line + 10}" y="{(y_h_bottom + y_h_top) / 2}" '
-            f'fill="#64748b" font-family="sans-serif" font-size="12">H = {H} mm</text>'
+            f'fill="#64748b" font-family="sans-serif" font-size="12">H = {H} мм</text>'
         )
 
         x_l_left, y_l_line = to_svg(0, -100)
@@ -181,7 +181,7 @@ with col_main:
         )
         svg_lines.append(
             f'<text x="{(x_l_left + x_l_right) / 2 - 30}" y="{y_l_line + 15}" '
-            f'fill="#64748b" font-family="sans-serif" font-size="12">L = {L:.0f} mm</text>'
+            f'fill="#64748b" font-family="sans-serif" font-size="12">L = {L:.0f} мм</text>'
         )
 
         if Pup > 0:
@@ -193,13 +193,13 @@ with col_main:
             )
             svg_lines.append(
                 f'<text x="{px1 + 5}" y="{(py1 + py2) / 2}" fill="#f97316" '
-                f'font-family="sans-serif" font-size="11">Pup = {Pup:.0f} mm</text>'
+                f'font-family="sans-serif" font-size="11">Pup = {Pup:.0f} мм</text>'
             )
 
         x_a, y_a = to_svg(80, 20)
         svg_lines.append(
             f'<text x="{x_a}" y="{y_a}" fill="#0f172a" font-family="sans-serif" '
-            f'font-weight="bold" font-size="14">{angle:.1f}\u00b0</text>'
+            f'font-weight="bold" font-size="14">{angle:.1f}°</text>'
         )
 
         svg_content = "\n".join(svg_lines)
@@ -216,38 +216,38 @@ with col_main:
         </svg>
         """
 
-        st.subheader("Side View")
+        st.subheader("Вид сбоку")
         st.components.v1.html(svg_wrapper, height=svg_h + 20)
 
     if blondel_applies:
         st.info(
-            f"**Blondel formula:** calculated value is **{blondel:.1f} mm** "
-            f"(ISO range: 600\u2013660 mm)."
+            f"**Формула Блонделя:** расчётное значение — **{blondel:.1f} мм** "
+            f"(диапазон ISO: 600–660 мм)."
         )
 
     st.markdown("---")
-    st.subheader("Compliance")
+    st.subheader("Соответствие нормам")
 
-    st.info(f"Detected type: **{stair_type}**")
+    st.info(f"Определённый тип: **{stair_type}**")
 
     if is_all_valid:
-        st.success("Fully complies with requirements!")
+        st.success("Полностью соответствует требованиям!")
     else:
-        st.error("Violations detected:")
+        st.error("Обнаружены нарушения:")
         if not is_valid_angle:
             st.warning(
-                f"Inclination angle {angle:.1f}\u00b0 outside allowed range ({angle_min_ok}\u00b0\u2013{angle_max_ok}\u00b0)."
+                f"Угол наклона {angle:.1f}° вне допустимого диапазона ({angle_min_ok}°–{angle_max_ok}°)."
             )
         if not is_valid_blondel:
             st.warning(
-                f"Blondel formula {blondel:.0f} mm outside allowed range (600\u2013660 mm)."
+                f"Формула Блонделя {blondel:.0f} мм вне допустимого диапазона (600–660 мм)."
             )
         if not is_valid_g:
-            st.warning(f"Tread depth {g_actual:.1f} mm too small (min. {g_min_ok} mm).")
+            st.warning(f"Глубина проступи {g_actual:.1f} мм слишком мала (мин. {g_min_ok} мм).")
         if not is_valid_h:
             st.warning(
-                f"Riser height {h_actual:.1f} mm exceeds max allowed ({h_max_ok} mm)."
+                f"Высота подступёнка {h_actual:.1f} мм превышает максимально допустимую ({h_max_ok} мм)."
             )
 
 st.markdown("---")
-st.caption("Version: 1.8")
+st.caption("Версия: 1.8")
