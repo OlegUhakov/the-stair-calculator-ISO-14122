@@ -16,7 +16,6 @@ with col_sidebar:
         "Общая высота подъёма (H), мм", min_value=300, max_value=4000, value=1500, step=5,
     )
 
-    Pd = st.number_input("Pd (вертикальное смещение снизу), мм", min_value=0, max_value=1000, value=0, step=5)
     Pup = st.number_input("Pup (вертикальное смещение сверху), мм", min_value=0, max_value=1000, value=0, step=5)
     B = st.number_input("Платформа снизу (B), мм", min_value=0, max_value=1000, value=0, step=5)
 
@@ -27,9 +26,9 @@ with col_sidebar:
 
     def offs_L(a_deg):
         a_r = math.radians(a_deg)
-        return (B + Pd + Pup) / math.tan(a_r) if math.tan(a_r) > 0 else 0
+        return (B + Pup) / math.tan(a_r) if math.tan(a_r) > 0 else 0
 
-    H_net = H - B - (Pd + Pup)
+    H_net = H - B - Pup
     g_actual = t
     h_actual = H_net / N
     angle = math.degrees(math.atan(h_actual / g_actual))
@@ -48,7 +47,7 @@ with col_sidebar:
     st.markdown("---")
     st.subheader("Смещения ступеней")
     angle_rad = math.radians(angle)
-    Ad = Pd / math.sin(angle_rad) if math.sin(angle_rad) > 0 else 0
+    Ad = B / math.sin(angle_rad) if math.sin(angle_rad) > 0 else 0
     Aup = Pup / math.sin(angle_rad) if math.sin(angle_rad) > 0 else 0
     st.number_input("Ad (вдоль лестницы, снизу), мм", value=round(Ad, 1), disabled=True, format="%.1f")
     st.number_input("Aup (вдоль лестницы, сверху), мм", value=round(Aup, 1), disabled=True, format="%.1f")
@@ -119,7 +118,7 @@ with col_main:
         )
 
         a_rad_svg = math.radians(angle)
-        x_off = ((B + Pd) / math.tan(a_rad_svg)) if a_rad_svg > 0 and math.tan(a_rad_svg) > 0 else 0
+        x_off = (B / math.tan(a_rad_svg)) if a_rad_svg > 0 and math.tan(a_rad_svg) > 0 else 0
 
         if B > 0:
             bw = 60 * scale
@@ -137,7 +136,7 @@ with col_main:
         step_color = "#3b82f6" if is_all_valid else "#ef4444"
         for i in range(N):
             x_curr = x_off + i * g_actual
-            y_curr = B + Pd + i * h_actual
+            y_curr = B + i * h_actual
 
             sx, sy = to_svg(x_curr, y_curr)
             s_g = g_actual * scale
@@ -155,8 +154,8 @@ with col_main:
                 )
 
         x_last = x_off + (N - 1) * g_actual
-        y_last = B + Pd + (N - 1) * h_actual
-        x1_t, y1_t = to_svg(x_off, B + Pd)
+        y_last = B + (N - 1) * h_actual
+        x1_t, y1_t = to_svg(x_off, B)
         x2_t, y2_t = to_svg(x_last, y_last)
         svg_lines.append(
             f'<line x1="{x1_t}" y1="{y1_t}" x2="{x2_t}" y2="{y2_t}" '
@@ -185,17 +184,6 @@ with col_main:
             f'fill="#64748b" font-family="sans-serif" font-size="12">L = {L:.0f} мм</text>'
         )
 
-        if Pd > 0:
-            px1, py1 = to_svg(x_off, B)
-            _, py2 = to_svg(x_off, B + Pd)
-            svg_lines.append(
-                f'<line x1="{px1}" y1="{py1}" x2="{px1}" y2="{py2}" '
-                f'stroke="#f97316" stroke-width="2" />'
-            )
-            svg_lines.append(
-                f'<text x="{px1 + 5}" y="{(py1 + py2) / 2}" fill="#f97316" '
-                f'font-family="sans-serif" font-size="11">Pd = {Pd:.0f} мм</text>'
-            )
         if Pup > 0:
             px1, py1 = to_svg(x_last + g_actual, H - Pup)
             _, py2 = to_svg(x_last + g_actual, H)
