@@ -38,23 +38,23 @@ with col_sidebar:
     L = g_actual * (N - 1) + offs_L(angle)
 
     st.markdown("---")
-    st.number_input("Подступёнок (h), мм", value=round(h_actual, 1), disabled=True, format="%.1f", key="__dh")
-    st.number_input("Проступь (g), мм", value=round(g_actual, 1), disabled=True, format="%.1f", key="__dg")
-    st.number_input("Общая ширина (t), мм", value=round(t_total, 1), disabled=True, format="%.1f", key="__dt")
-    st.number_input("L (горизонтальный пролёт), мм", value=round(L, 0), disabled=True, format="%.0f", key="__dl")
+    st.number_input("Подступёнок (h), мм", value=float(round(h_actual, 1)), disabled=True, format="%.1f", key="__dh")
+    st.number_input("Проступь (g), мм", value=float(g_actual), disabled=True, format="%.1f", key="__dg")
+    st.number_input("Общая ширина (t), мм", value=float(t_total), disabled=True, format="%.1f", key="__dt")
+    st.number_input("L (горизонтальный пролёт), мм", value=float(round(L, 0)), disabled=True, format="%.0f", key="__dl")
 
     st.markdown("---")
     st.subheader("Расстояние между ступенями")
     step_diagonal = math.sqrt(g_actual ** 2 + h_actual ** 2)
-    st.number_input("По наклону, мм", value=round(step_diagonal, 1), disabled=True, format="%.1f", key="__ddiag")
+    st.number_input("По наклону, мм", value=float(round(step_diagonal, 1)), disabled=True, format="%.1f", key="__ddiag")
 
     st.markdown("---")
     st.subheader("Смещения ступеней")
     angle_rad = math.radians(angle)
     Ad = (B + Pdown) / math.sin(angle_rad) if math.sin(angle_rad) > 0 else 0
     Aup = Pup / math.sin(angle_rad) if math.sin(angle_rad) > 0 else 0
-    st.number_input("Ad (вдоль лестницы, снизу), мм", value=round(Ad, 1), disabled=True, format="%.1f")
-    st.number_input("Aup (вдоль лестницы, сверху), мм", value=round(Aup, 1), disabled=True, format="%.1f")
+    st.number_input("Ad (вдоль лестницы, снизу), мм", value=float(round(Ad, 1)), disabled=True, format="%.1f")
+    st.number_input("Aup (вдоль лестницы, сверху), мм", value=float(round(Aup, 1)), disabled=True, format="%.1f")
 
     if angle < 45:
         stair_type = "Лестницы (20°–45°)"
