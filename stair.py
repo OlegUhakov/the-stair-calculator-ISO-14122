@@ -269,4 +269,4 @@ with col_main:
             )
 
 st.markdown("---")
-st.caption("Version: 1.8")
+st.caption("Version: 2.0")

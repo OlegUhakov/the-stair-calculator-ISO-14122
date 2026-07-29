@@ -80,7 +80,7 @@ streamlit run stair.py    # or stair_ru.py
 
 ## Version
 
-**1.8** — Latest release. See version tag in the app footer.
+**2.0** — Latest release. See version tag in the app footer.
 
 ## Reference
 
