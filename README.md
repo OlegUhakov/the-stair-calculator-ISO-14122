@@ -14,14 +14,14 @@ A Streamlit-based tool for calculating and verifying industrial stairs and stepl
 ## Features
 
 - Geometry calculation from step count (N) and tread depth (t)
-- Bottom platform offset (B) and top offset (Pup) support
+- Bottom platform (B), bottom offset (Pdown) and top offset (Pup) support
 - Automatic type detection: **Stairs** (20°–45°) or **Stepladders** (45°–75°)
 - ISO 14122-3 compliance checks:
   - Inclination angle
   - Blondel formula (600 ≤ g + 2h ≤ 660)
   - Minimum tread depth (g)
   - Maximum riser height (h)
-- Side-view SVG visualization with dimensions (H, L, angle, B, Pup)
+- Side-view SVG visualization with dimensions (H, L, angle, B, Pdown, Pup)
 - Real-time feedback — compliant steps in blue, violations in red
 
 ## Quick Start (Windows)
@@ -51,14 +51,15 @@ streamlit run stair.py    # or stair_ru.py
 | **H** | Total rise height, mm | 300–4000 |
 | **Pup** | Vertical top offset, mm | 0–1000 |
 | **B** | Bottom platform, mm | 0–1000 |
+| **Pdown** | Vertical bottom offset, mm | 0–1000 |
 | **N** | Number of steps | 1–30 |
 | **t** | Tread depth, mm | 200–320 |
 
 ## Calculation
 
-- Net rise height: `H_net = H − B − Pup`
+- Net rise height: `H_net = H − B − Pdown − Pup`
 - Riser height: `h = H_net / N`
-- Horizontal run: `L = (N−1)·g + (B+Pup)/tan(α)`
+- Horizontal run: `L = (N−1)·g + (B+Pdown+Pup)/tan(α)`
 - Inclination angle: `α = atan(h / g)`
 
 ## ISO 14122-3:2016 Requirements

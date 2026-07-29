@@ -17,6 +17,7 @@ with col_sidebar:
     )
 
     Pup = st.number_input("Pup (vertical top offset), mm", min_value=0, max_value=1000, value=0, step=5)
+    Pdown = st.number_input("Pdown (vertical bottom offset), mm", min_value=0, max_value=1000, value=0, step=5)
     B = st.number_input("Bottom platform (B), mm", min_value=0, max_value=1000, value=0, step=5)
 
     st.markdown("---")
@@ -26,9 +27,9 @@ with col_sidebar:
 
     def offs_L(a_deg):
         a_r = math.radians(a_deg)
-        return (B + Pup) / math.tan(a_r) if math.tan(a_r) > 0 else 0
+        return (B + Pdown + Pup) / math.tan(a_r) if math.tan(a_r) > 0 else 0
 
-    H_net = H - B - Pup
+    H_net = H - B - Pdown - Pup
     g_actual = t
     h_actual = H_net / N
     angle = math.degrees(math.atan(h_actual / g_actual))
@@ -47,7 +48,7 @@ with col_sidebar:
     st.markdown("---")
     st.subheader("Step offsets")
     angle_rad = math.radians(angle)
-    Ad = B / math.sin(angle_rad) if math.sin(angle_rad) > 0 else 0
+    Ad = (B + Pdown) / math.sin(angle_rad) if math.sin(angle_rad) > 0 else 0
     Aup = Pup / math.sin(angle_rad) if math.sin(angle_rad) > 0 else 0
     st.number_input("Ad (along stair, bottom), mm", value=round(Ad, 1), disabled=True, format="%.1f")
     st.number_input("Aup (along stair, top), mm", value=round(Aup, 1), disabled=True, format="%.1f")
@@ -83,6 +84,8 @@ with col_main:
         st.subheader("Parameters")
         if B > 0:
             st.metric("Platform (B)", f"{B} mm")
+        if Pdown > 0:
+            st.metric("Pdown", f"{Pdown} mm")
         st.metric("Steps (N)", f"{N}")
         st.metric("Riser (h)", f"{h_actual:.1f} mm")
         st.metric("Tread (g)", f"{g_actual:.1f} mm")
@@ -118,7 +121,7 @@ with col_main:
         )
 
         a_rad_svg = math.radians(angle)
-        x_off = (B / math.tan(a_rad_svg)) if a_rad_svg > 0 and math.tan(a_rad_svg) > 0 else 0
+        x_off = ((B + Pdown) / math.tan(a_rad_svg)) if a_rad_svg > 0 and math.tan(a_rad_svg) > 0 else 0
 
         if B > 0:
             bw = 60 * scale
@@ -133,10 +136,22 @@ with col_main:
                 f'font-family="sans-serif" font-size="11">B = {B} mm</text>'
             )
 
+        if Pdown > 0:
+            pd_x1, pd_y1 = to_svg(0, B)
+            _, pd_y2 = to_svg(0, B + Pdown)
+            svg_lines.append(
+                f'<line x1="{pd_x1}" y1="{pd_y1}" x2="{pd_x1}" y2="{pd_y2}" '
+                f'stroke="#22c55e" stroke-width="2" />'
+            )
+            svg_lines.append(
+                f'<text x="{pd_x1 + 5}" y="{(pd_y1 + pd_y2) / 2}" fill="#22c55e" '
+                f'font-family="sans-serif" font-size="11">Pdown = {Pdown:.0f} mm</text>'
+            )
+
         step_color = "#3b82f6" if is_all_valid else "#ef4444"
         for i in range(N):
             x_curr = x_off + i * g_actual
-            y_curr = B + i * h_actual
+            y_curr = B + Pdown + i * h_actual
 
             sx, sy = to_svg(x_curr, y_curr)
             s_g = g_actual * scale
@@ -154,8 +169,8 @@ with col_main:
                 )
 
         x_last = x_off + (N - 1) * g_actual
-        y_last = B + (N - 1) * h_actual
-        x1_t, y1_t = to_svg(x_off, B)
+        y_last = B + Pdown + (N - 1) * h_actual
+        x1_t, y1_t = to_svg(x_off, B + Pdown)
         x2_t, y2_t = to_svg(x_last, y_last)
         svg_lines.append(
             f'<line x1="{x1_t}" y1="{y1_t}" x2="{x2_t}" y2="{y2_t}" '
