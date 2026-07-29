@@ -13,7 +13,7 @@ A Streamlit-based tool for calculating and verifying industrial stairs and stepl
 
 ## Features
 
-- Geometry calculation from step count (N) and tread depth (t)
+- Geometry calculation from step count (N), tread (g) and overlap (r)
 - Bottom platform (B), bottom offset (Pdown) and top offset (Pup) support
 - Automatic type detection: **Stairs** (20°–45°) or **Stepladders** (45°–75°)
 - ISO 14122-3 compliance checks:
@@ -53,12 +53,15 @@ streamlit run stair.py    # or stair_ru.py
 | **B** | Bottom platform, mm | 0–1000 |
 | **Pdown** | Vertical bottom offset, mm | 0–1000 |
 | **N** | Number of steps | 1–30 |
-| **t** | Tread depth, mm | 200–320 |
+| **r** | Overlap (tread overhang), mm | 0–50 |
+| **g** | Tread (step run), mm | 150–320 |
+| **t** | Total tread depth (g + r), mm | computed |
 
 ## Calculation
 
 - Net rise height: `H_net = H − B − Pdown − Pup`
 - Riser height: `h = H_net / N`
+- Total tread depth: `t = g + r`
 - Horizontal run: `L = (N−1)·g + (B+Pdown+Pup)/tan(α)`
 - Inclination angle: `α = atan(h / g)`
 

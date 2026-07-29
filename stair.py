@@ -19,25 +19,28 @@ with col_sidebar:
     Pup = st.number_input("Pup (vertical top offset), mm", min_value=0, max_value=1000, value=0, step=5)
     Pdown = st.number_input("Pdown (vertical bottom offset), mm", min_value=0, max_value=1000, value=0, step=5)
     B = st.number_input("Bottom platform (B), mm", min_value=0, max_value=1000, value=0, step=5)
+    r = st.number_input("Overlap (r), mm", min_value=0, max_value=50, value=10, step=1)
 
     st.markdown("---")
 
     N = st.slider("Steps (N)", min_value=1, max_value=30, value=8)
-    t = st.slider("Tread depth (t), mm", min_value=200, max_value=320, step=5, value=280)
+    g = st.slider("Tread (g), mm", min_value=150, max_value=320, step=5, value=280)
 
     def offs_L(a_deg):
         a_r = math.radians(a_deg)
         return (B + Pdown + Pup) / math.tan(a_r) if math.tan(a_r) > 0 else 0
 
     H_net = H - B - Pdown - Pup
-    g_actual = t
+    g_actual = g
     h_actual = H_net / N
     angle = math.degrees(math.atan(h_actual / g_actual))
+    t_total = g + r
     L = g_actual * (N - 1) + offs_L(angle)
 
     st.markdown("---")
     st.number_input("Riser (h), mm", value=round(h_actual, 1), disabled=True, format="%.1f", key="__dh")
     st.number_input("Tread (g), mm", value=round(g_actual, 1), disabled=True, format="%.1f", key="__dg")
+    st.number_input("Total tread (t), mm", value=round(t_total, 1), disabled=True, format="%.1f", key="__dt")
     st.number_input("L (horizontal run), mm", value=round(L, 0), disabled=True, format="%.0f", key="__dl")
 
     st.markdown("---")
@@ -92,7 +95,8 @@ with col_main:
         st.metric("L (horizontal run)", f"{L:.0f} mm")
         st.metric("Angle (\u03b1)", f"{angle:.1f}\u00b0")
         st.metric("Along slope", f"{step_diagonal:.1f} mm")
-        st.metric("Tread depth (t)", f"{t} mm")
+        st.metric("Total tread (t)", f"{t_total:.1f} mm")
+        st.metric("Overlap (r)", f"{r} mm")
 
     with col_draw:
         svg_w = 800
