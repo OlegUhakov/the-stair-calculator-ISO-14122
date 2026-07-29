@@ -24,7 +24,7 @@ with col_sidebar:
     st.markdown("---")
 
     N = st.slider("Ступени (N)", min_value=1, max_value=30, value=8)
-    g = st.slider("Проступь (g), мм", min_value=150, max_value=320, step=2, value=280)
+    g = st.slider("Проступь (g), мм", min_value=150, max_value=320, step=1, value=280)
 
     def offs_L(a_deg):
         a_r = math.radians(a_deg)
