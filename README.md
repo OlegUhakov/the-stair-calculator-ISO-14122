@@ -2,7 +2,7 @@
 
 # Industrial Stair Calculator
 
-A Streamlit-based tool for calculating and verifying industrial stairs and stepladders per **ISO 14122-3:2016** (Safety of machinery — Permanent means of access to machinery — Part 3: Stairs, stepladders and guard-rails).
+A Streamlit-based tool for calculating and verifying industrial stairs and stepladders per **ISO 14122-3:2016**.
 
 ## Languages
 
@@ -53,9 +53,11 @@ streamlit run stair.py    # or stair_ru.py
 | **B** | Bottom platform, mm | 0–1000 |
 | **Pdown** | Vertical bottom offset, mm | 0–1000 |
 | **N** | Number of steps | 1–30 |
-| **r** | Overlap (tread overhang), mm | 0–50 |
-| **g** | Tread (step run), mm | 150–320 |
+| **r** | Overlap (tread overhang beyond the riser below), mm | 0–50 |
+| **g** | Tread (step run, visible horizontal depth), mm | 150–320 |
 | **t** | Total tread depth (g + r), mm | computed |
+
+> **Overlap (r)** is the horizontal projection of the tread overhang past the riser face below it. It adds to the usable tread depth and affects the total tread width `t = g + r`. In the SVG side view the tread lines represent the exposed part `g`.
 
 ## Calculation
 
