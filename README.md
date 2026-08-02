@@ -10,6 +10,7 @@ A Streamlit-based tool for calculating and verifying industrial stairs and stepl
 |------|----------|
 | `stair.py` | English |
 | `stair_ru.py` | Russian |
+| `stair_pl.py` | Polish |
 
 ## Features
 
@@ -30,6 +31,7 @@ A Streamlit-based tool for calculating and verifying industrial stairs and stepl
 install.bat   # create venv and install dependencies
 start.bat     # launch EN version
 start_ru.bat  # launch RU version
+start_pl.bat  # launch PL version
 ```
 
 ## Manual Install
@@ -41,7 +43,7 @@ python -m venv venv
 venv\Scripts\activate     # Windows
 source venv/bin/activate  # Linux/macOS
 pip install -r requirements.txt
-streamlit run stair.py    # or stair_ru.py
+streamlit run stair.py    # or stair_ru.py / stair_pl.py
 ```
 
 ## Input Parameters
@@ -78,7 +80,7 @@ streamlit run stair.py    # or stair_ru.py
 
 - **Python 3** + **Streamlit**
 - Pure SVG rendering (no extra libraries)
-- Single-file app (`stair.py` / `stair_ru.py`)
+- Single-file app (`stair.py` / `stair_ru.py` / `stair_pl.py`)
 
 ## Version
 
