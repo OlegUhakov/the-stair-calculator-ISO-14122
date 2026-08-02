@@ -6,11 +6,11 @@ A Streamlit-based tool for calculating and verifying industrial stairs and stepl
 
 ## Languages
 
-| File | Language |
-|------|----------|
-| `stair.py` | English |
-| `stair_ru.py` | Russian |
-| `stair_pl.py` | Polish |
+| File        | Language |
+|-------------|----------|
+| `stair.py`  | English  |
+| `stair_ru.py` | Russian  |
+| `stair_pl.py` | Polish   |
 
 ## Features
 
