@@ -90,4 +90,6 @@ streamlit run stair.py    # or stair_ru.py / stair_pl.py
 
 **ISO 14122-3:2016** — Safety of machinery — Permanent means of access to machinery — Part 3: Stairs, stepladders and guard-rails.
 
+## Demo
+
 [Demo](https://the-stair-calculator-iso-14122-3.streamlit.app/)
