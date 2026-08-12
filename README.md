@@ -92,4 +92,4 @@ streamlit run stair.py    # or stair_ru.py / stair_pl.py
 
 ## Demo
 
-[Demo](https://the-stair-calculator-iso-14122-3.streamlit.app/)
+[the-stair-calculator-iso-14122](https://the-stair-calculator-iso-14122-3.streamlit.app/)
