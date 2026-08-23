@@ -6,18 +6,18 @@ if %errorlevel% equ 0 (
     set "PYTHON_CMD=python"
 )
 
-echo Creating virtual environment...
-%PYTHON_CMD% -m venv venv
+echo Creating virtual environment in parent folder...
+%PYTHON_CMD% -m venv ..\venv
 if %errorlevel% neq 0 (
     echo Failed to create virtual environment. Make sure Python is installed.
     pause
     exit /b 1
 )
 
-if exist "venv\Scripts\python.exe" (
-    set "VENV_PYTHON=venv\Scripts\python.exe"
+if exist "..\venv\Scripts\python.exe" (
+    set "VENV_PYTHON=..\venv\Scripts\python.exe"
 ) else (
-    set "VENV_PYTHON=venv\bin\python.exe"
+    set "VENV_PYTHON=..\venv\bin\python.exe"
 )
 
 echo Upgrading pip...

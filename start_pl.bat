@@ -1,10 +1,10 @@
 @echo off
 pushd "%~dp0"
 
-if exist "venv\Scripts\streamlit.exe" (
-    set "STREAMLIT=venv\Scripts\streamlit.exe"
-) else if exist "venv\bin\streamlit.exe" (
-    set "STREAMLIT=venv\bin\streamlit.exe"
+if exist "..\venv\Scripts\streamlit.exe" (
+    set "STREAMLIT=..\venv\Scripts\streamlit.exe"
+) else if exist "..\venv\bin\streamlit.exe" (
+    set "STREAMLIT=..\venv\bin\streamlit.exe"
 ) else (
     echo [ERROR] Virtual environment not found. Run install.bat first.
     pause
